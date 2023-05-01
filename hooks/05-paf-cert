@@ -1,0 +1,11 @@
+#!/bin/bash -x
+
+set -e
+
+mkdir -p $TARGET/usr/local/share/ca-certificates
+
+cp /usr/share/ca-certificates/paf.proxy.crt $TARGET/usr/local/share/ca-certificates/
+
+chroot "$TARGET" update-ca-certificates
+
+exit 0

@@ -1,0 +1,96 @@
+#!/bin/bash -x
+
+# Copyright (C) 2009 Google Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
+
+# This is an example script that configures you /etc/network/interfaces after
+# installation.  By default its sets up the system to use dhcp. To use it just
+# put it in your CUSTOMIZE_DIR and make it executable.
+
+set -e
+
+if [ -z "$TARGET" -o ! -d "$TARGET" ]; then
+  echo "Missing target directory"
+  exit 1
+fi
+
+if [ ! -d "$TARGET/etc/network" ]; then
+  echo "Missing target network directory"
+  exit 1
+fi
+
+if [ -z "$NIC_COUNT" ]; then
+  echo "Missing NIC COUNT"
+  exit 1
+fi
+
+if [ "$OSP_COURSE" = "cs426" ]; then
+  echo "Senior projects interfaces are configured by role"
+  exit 0
+fi
+
+if [ "$OSP_COURSE" = "rc" ]; then
+  echo "Research computing project interfaces are configured by role"
+  exit 0
+fi
+
+if [ "$NIC_COUNT" -gt 0 ]; then
+  cat > $TARGET/etc/network/interfaces <<EOF
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+auto lo
+iface lo inet loopback
+
+auto eth0
+EOF
+
+  if [ -n "$NIC_0_IP" ]; then
+    if [ -z "$NIC_0_NETWORK_SUBNET" ] ; then
+      echo "Missing NETWORK SUBNET from gnt-network"
+      exit 1
+    fi
+    # we do not fail if no gateway was specified; we just avoid
+    # emitting a # 'gateway' line into /etc/network/interfaces
+    cat >> $TARGET/etc/network/interfaces <<EOF
+iface eth0 inet static
+  mtu 1450
+  address $NIC_0_IP
+  netmask ${NIC_0_NETWORK_SUBNET##*/}
+  $( [ ! -z "${NIC_0_NETWORK_GATEWAY}" ] && echo "gateway ${NIC_0_NETWORK_GATEWAY}")
+EOF
+
+  else
+    cat >> $TARGET/etc/network/interfaces <<EOF
+iface eth0 inet dhcp
+  mtu 1450
+EOF
+
+  fi
+
+  if [ -n "$OSP_PUE" ]; then
+    if [ -n "$NIC_1_IP" ]; then
+    cat >> $TARGET/etc/network/interfaces <<EOF
+
+auto eth1
+iface eth1 inet static
+  mtu 1450
+  address $NIC_1_IP/24
+EOF
+    fi
+  fi
+fi

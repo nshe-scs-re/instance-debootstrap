@@ -1,0 +1,76 @@
+#!/bin/bash
+
+if [ -z "$TARGET" -o ! -d "$TARGET" ]; then
+  echo "Missing target directory"
+  exit 1
+fi
+
+if [ -n "$OSP_OWASP" ]; then
+	echo "VERY PROFESSIONAL DEBUG MESSAGE"
+
+	chroot "$TARGET" apt update
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --reinstall dpkg 
+	echo "VERY PROFESSIONAL DEBUG MESSAGE #2"
+	#LAMP
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install git
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install apache2
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install mariadb-server
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php-xml php-fpm libapache2-mod-php php-mysql php-xml php-gd php-imap php-mysql php-gettext php-curl
+
+	echo "VERY PROFESSIONAL DEBUG MESSAGE #3"
+	#OWASP mutillidae
+	chroot "$TARGET" a2enmod proxy_fcgi setenvif
+	chroot "$TARGET" systemctl restart apache2
+	chroot "$TARGET" a2enconf php7.3-fpm
+	chroot "$TARGET" systemctl reload apache2
+	chroot "$TARGET" systemctl restart apache2.service
+	chroot "$TARGET" service php7.3-fpm restart
+	chroot "$TARGET" systemctl restart mysql
+	echo "VERY PROFESSIONAL DEBUG MESSAGE #4"
+	mkdir -p $TARGET/var/www/html/mutillidae
+	cp -r /etc/ganeti/instance-debootstrap/res/mutillidae/* $TARGET/var/www/html/mutillidae
+	chown -R www-data:www-data $TARGET/var/www/html/mutillidae/
+	rm $TARGET/var/www/html/index.html
+	ln -s /var/www/html/mutillidae/ $TARGET/var/www/html/index.html 
+
+	echo "VERY PROFESSIONAL DEBUG MESSAGE DVWA"
+	#DVWA
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php php-mysql php-gd
+	  
+	sed -i 's/allow_url_include = Off/allow_url_include = On/' $TARGET/etc/php/7.3/apache2/php.ini
+	  
+	chroot "$TARGET" systemctl restart apache2
+	chroot "$TARGET" systemctl restart mysql
+	  
+	mkdir -p $TARGET/var/www/html/dvwa
+	cp -r /etc/ganeti/instance-debootstrap/res/dvwa/* $TARGET/var/www/html/dvwa
+	  
+	chown -R www-data:www-data $TARGET/var/www/html/dvwa/
+	  
+	#mysql -u root
+	#use mysql;
+	#update user set authentication_string=PASSWORD('p@ssw0rd') where user='root';
+	#update user set plugin='mysql_native_password' where user='root';
+	#flush privileges;
+	#quit;
+	#mysql --user=root -e "CREATE USER '"${MYSQL_USER}"'@'localhost' IDENTIFIED BY '${MYSQL_USER_PASSWORD}';"
+	#mysql --user=root -e "GRANT ALL PRIVILEGES ON  *.* to 'pi'@'localhost' WITH GRANT OPTION;"
+
+	#echo "VERY PROFESSIONAL DEBUG MESSAGE MYSQL"
+	#chroot "$TARGET" mysql --user=root -e "update user set authentication_string=PASSWORD('p@ssw0rd') where user='root@localhost';"
+	#chroot "$TARGET" mysql --user=root -e "update user set plugin='mysql_native_password' where user='root@localhost';"
+	#chroot "$TARGET" mysql --user=root -e "flush privileges;"
+
+	#chroot "$TARGET" mysql --user=root -e "update user set authentication_string=PASSWORD('p@ssw0rd') where user='root@127.0.0.1';"
+	#chroot "$TARGET" mysql --user=root -e "update user set plugin='mysql_native_password' where user='root@127.0.0.1';"
+	#chroot "$TARGET" mysql --user=root -e "flush privileges;"
+
+	#chroot "$TARGET" mysql --user=root -e "update user set authentication_string=PASSWORD('p@ssw0rd') where user='root';"
+	#chroot "$TARGET" mysql --user=root -e "update user set plugin='mysql_native_password' where user='root';"
+	#chroot "$TARGET" mysql --user=root -e "flush privileges;"
+	
+	exit 0
+fi
+
+echo "VM is not apart of OWASP exiting owasp setup hook"
+exit 0

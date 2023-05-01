@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ -z "$TARGET" -o ! -d "$TARGET" ]; then
+  echo "Missing target directory"
+  exit 1
+fi
+
+if [ "${OSP_LAB}" = "lab1" ]; then
+chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install wireshark
+chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install nginx
+chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install vsftpd
+chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install wget
+chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install curl
+
+fi
+
+echo "Lab hook done"
+
+exit 0

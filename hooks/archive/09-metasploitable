@@ -1,0 +1,30 @@
+#!/bin/bash
+
+env
+if [ -z "$TARGET" -o ! -d "$TARGET" ]; then
+  echo "Missing target directory"
+  exit 1
+fi
+
+if [ $OSP_MSF = "true" ]; then
+	MSF_ROOTFS=/tmp/mnt/$OSP_NETID
+	dd if=/etc/ganeti/instance-debootstrap/res/Metasploitable.raw of=$BLOCKDEV bs=4M
+	sleep 5
+	sync
+	sleep 5
+	mkdir -p $MSF_ROOTFS
+	kpartx -av $BLOCKDEV
+	lvscan
+	mount /dev/metasploitable/root $MSF_ROOTFS
+	sed -i 's/sda/vda/g' $MSF_ROOTFS/etc/fstab
+	echo "$INSTANCE" > $MSF_ROOTFS/etc/hostname
+
+	#CLEANUP
+	umount $MSF_ROOTFS
+	vgremove --force /dev/metasploitable
+	pvremove "$BLOCKDEV"p5
+	kpartx -dv $BLOCKDEV
+fi
+
+echo "OSP_METASPLOITABLE not set so exiting"
+exit 0

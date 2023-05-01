@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ -z "$TARGET" -o ! -d "$TARGET" ]; then
+  echo "Missing target directory"
+  exit 1
+fi
+
+if [ "${OSP_COURSE}" = "ccdc" ]; then
+
+  if [ "${OSP_ROLE}" = "client" ]; then
+
+    run-parts /etc/ganeti/instance-debootstrap/hooks/ccdc/client
+  fi
+
+
+fi
+
+exit 0

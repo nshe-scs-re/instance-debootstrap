@@ -1,0 +1,14 @@
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet static
+  mtu 1450
+  address {{ NIC_0_IP }}
+  netmask {{ NIC_0_NETWORK_SUBNET[-2:] }}
+  gateway {{ NIC_0_NETWORK_GATEWAY }}
+
+auto pue0
+iface pue0 inet static
+  mtu 1450
+  address {{ NIC_1_IP }}/24

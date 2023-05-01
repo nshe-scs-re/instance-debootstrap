@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ -z "$TARGET" -o ! -d "$TARGET" ]; then
+  echo "Missing target directory"
+  exit 1
+fi
+
+if [ $OSP_LABTAINER = "true" ]; then
+
+	chroot "$TARGET" apt update
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --reinstall dpkg 
+	cp -r /etc/ganeti/instance-debootstrap/res/labtainer "$TARGET"/opt/
+
+	exit 0
+fi
+
+echo "VM is not apart of labtainer exiting labtainer setup hook"
+exit 0

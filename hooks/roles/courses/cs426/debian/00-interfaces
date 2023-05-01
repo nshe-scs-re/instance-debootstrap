@@ -1,0 +1,8 @@
+#!/bin/bash
+
+INTERFACES_TMPL="/etc/ganeti/instance-debootstrap/hooks/roles/courses/cs426/debian/templates/interfaces.j2"
+UDEV_TMPL="/etc/ganeti/instance-debootstrap/hooks/roles/courses/cs426/debian/templates/80-pue-interface.rules.j2"
+
+/usr/local/bin/j2 -f env ${INTERFACES_TMPL} > ${TARGET}/etc/network/interfaces
+
+/usr/local/bin/j2 -f env ${UDEV_TMPL} > ${TARGET}/etc/udev/rules.d/80-pue-interface.rules

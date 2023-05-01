@@ -1,0 +1,36 @@
+#!/bin/bash
+
+if [ -z "$TARGET" -o ! -d "$TARGET" ]; then
+  echo "Missing target directory"
+  exit 1
+fi
+
+if [ "$OSP_KALI" = "true" ]; then
+
+	chroot "$TARGET" apt update
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --reinstall dpkg 
+
+	#XFCE4
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install kali-desktop-xfce
+	#basic cs445 tools
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install nmap
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install iptables
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install snort
+	#DEP for scapy
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install python-pyx
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install python-scapy
+	#DEP for scapy
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install python3-pyx
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install python3-scapy
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install wireshark-qt
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install firefox-esr
+	chroot "$TARGET" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install metasploit-framework
+	#configure metasploit db
+	chroot "$TARGET" service postgresql enable
+	chroot "$TARGET" msfdb init
+
+	exit 0
+fi
+
+echo "VM is not apart of kali exiting kali setup hook"
+exit 0

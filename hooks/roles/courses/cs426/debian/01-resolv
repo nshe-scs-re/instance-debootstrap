@@ -1,0 +1,5 @@
+#!/bin/bash
+
+RESOLV_CONF="/etc/ganeti/instance-debootstrap/hooks/roles/courses/cs446/files/resolv.conf"
+
+cp ${RESOLV_CONF} ${TARGET}/etc/resolv.conf

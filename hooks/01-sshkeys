@@ -1,0 +1,23 @@
+#!/bin/bash -x
+
+set -e
+
+AUTH_KEYZ="/etc/ganeti/instance-debootstrap/hooks/files/authorized_keys"
+
+if [ -z "$TARGET" -o ! -d "$TARGET" ]; then
+  echo "Missing target directory"
+  exit 1
+fi
+
+mkdir -p $TARGET/root/.ssh
+
+#NCR Access
+cp "${AUTH_KEYZ}" "${TARGET}/root/.ssh/authorized_keys"
+
+chmod 700 $TARGET/root/.ssh
+chmod 600 $TARGET/root/.ssh/authorized_keys
+
+echo "Key insertion hook done"
+
+exit 0
+

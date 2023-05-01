@@ -1,0 +1,12 @@
+#!/bin/bash
+
+
+cat >> $TARGET/etc/network/interfaces <<EOF
+
+auto eth1
+iface eth1 inet static
+  address 192.168.1.11/24
+
+EOF
+
+

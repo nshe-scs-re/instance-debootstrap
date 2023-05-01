@@ -1,0 +1,12 @@
+#!/bin/bash -x
+
+set -e
+
+if [ -z "$TARGET" -o ! -d "$TARGET" ]; then
+  echo "Missing target directory"
+  exit 1
+fi
+
+rm $TARGET/etc/apt/apt.conf.d/proxy
+
+exit 0

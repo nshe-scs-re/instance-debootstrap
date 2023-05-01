@@ -1,0 +1,57 @@
+#!/bin/bash -x
+
+set -e
+
+BASE_DIR="/etc/ganeti/instance-debootstrap/hooks"
+SCRIPTS_DIR="${BASE_DIR}/roles/courses/${OSP_COURSE}/${OSP_ROLE}"
+
+echo "***** Course: '${OSP_COURSE}', Course: '${OSP_ROLE}', Directory: '${SCRIPTS_DIR}' *****"
+
+##### BEGIN - cs445 roles #####
+if [[ "${OSP_COURSE}" = "cs445" ]]; then
+
+  # Debian
+  if [[ "${OSP_ROLE}" = "debian" ]]; then
+    run-parts -v --report $SCRIPTS_DIR
+  fi
+
+fi
+##### END - cs445 roles #####
+
+##### BEGIN - cs446 roles #####
+if [[ "${OSP_COURSE}" = "cs446" ]]; then
+
+  # Debian
+  if [[ "${OSP_ROLE}" = "ubuntu" ]]; then
+    run-parts -v --report $SCRIPTS_DIR
+  fi
+
+fi
+##### END - cs446 roles #####
+
+
+##### BEGIN - cs426 roles #####
+if [[ "${OSP_COURSE}" = "cs426" ]]; then
+
+  # Debian
+  if [[ "${OSP_ROLE}" = "debian" ]]; then
+    run-parts -v --report $SCRIPTS_DIR
+  fi
+
+fi
+##### END - cs426 roles #####
+
+
+##### BEGIN - rc roles #####
+if [[ "${OSP_COURSE}" = "rc" ]]; then
+
+  # Debian
+  if [[ "${OSP_ROLE}" = "debian" ]]; then
+    run-parts -v --report $SCRIPTS_DIR
+  fi
+
+fi
+##### END - rc roles #####
+
+
+exit 0
